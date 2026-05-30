@@ -349,7 +349,7 @@ export default function Home() {
                     <nav style={{ width: '100%' }}>
                         <ul className="nav-links" style={{ margin: 0, padding: 0 }}>
                             {['All', 'New Arrivals', 'Sarees', 'Suits', 'Lehenga', 'Garara'].map(cat => (
-                                <li key={cat}><a href="#" className={selectedCategories.length === 0 && cat === 'All' ? 'active' : selectedCategories.includes(cat) ? 'active' : ''} onClick={(e) => { e.preventDefault(); if (cat === 'All') setSelectedCategories([]); else toggleFilter(selectedCategories, setSelectedCategories, cat); }}>{cat}</a></li>
+                                <li key={cat}><a href="#" className={selectedCategories.length === 0 && cat === 'All' ? 'active' : selectedCategories.includes(cat) ? 'active' : ''} onClick={(e) => { e.preventDefault(); if (cat === 'All') setSelectedCategories([]); else setSelectedCategories([cat]); }}>{cat}</a></li>
                             ))}
                         </ul>
                     </nav>
@@ -365,7 +365,7 @@ export default function Home() {
                             <a href="#" className={selectedCategories.length === 0 && cat === 'All' ? 'active' : selectedCategories.includes(cat) ? 'active' : ''} onClick={(e) => {
                                 e.preventDefault();
                                 if (cat === 'All') setSelectedCategories([]);
-                                else toggleFilter(selectedCategories, setSelectedCategories, cat);
+                                else setSelectedCategories([cat]);
                                 setIsMobileMenuOpen(false);
                             }}>
                                 {cat}
