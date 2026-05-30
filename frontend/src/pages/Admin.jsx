@@ -9,6 +9,7 @@ export default function Admin() {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
     const [clock, setClock] = useState('');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editProduct, setEditProduct] = useState(null);
@@ -209,17 +210,32 @@ export default function Admin() {
 
     return (
         <div id="admin-view" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-color)', color: 'var(--text-main)' }}>
-            <aside className="admin-sidebar" style={{ width: '250px', background: 'var(--bg-light)', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
-                <div className="admin-logo" style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            {isSidebarOpen && (
+                <div 
+                    className="admin-sidebar-overlay" 
+                    onClick={() => setIsSidebarOpen(false)}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1005 }}
+                />
+            )}
+
+            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ background: 'var(--bg-light)', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
+                <div className="admin-logo" style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', position: 'relative' }}>
                     <img src="/Img/logo-transparent.png" alt="Saim's Admin Logo" style={{ height: '30px', objectFit: 'contain' }} />
                     <span style={{ fontSize: '1rem', color: 'var(--gold)' }}>×</span>
                     <img src="/Img/upscalemedia-transformed.png" alt="Partner Logo" style={{ height: '30px', objectFit: 'contain', position: 'relative', top: '4px' }} />
+                    <button 
+                        className="admin-sidebar-close" 
+                        onClick={() => setIsSidebarOpen(false)} 
+                        style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-main)', fontSize: '1.8rem', cursor: 'pointer', display: 'none', padding: 0 }}
+                    >
+                        ×
+                    </button>
                 </div>
                 <ul className="admin-menu" style={{ listStyle: 'none', padding: '20px 0', flex: 1 }}>
                     {['dashboard', 'orders', 'products', 'payments'].map(tab => (
                         <li key={tab}>
                             <button
-                                onClick={() => setActiveTab(tab)}
+                                onClick={() => { setActiveTab(tab); setIsSidebarOpen(false); }}
                                 style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', color: activeTab === tab ? 'var(--gold)' : 'var(--text-muted)', background: activeTab === tab ? 'rgba(201,168,76,0.1)' : 'transparent', borderLeft: activeTab === tab ? '3px solid var(--gold)' : '3px solid transparent', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer', textTransform: 'capitalize' }}
                             >
                                 {tab}
@@ -238,13 +254,22 @@ export default function Admin() {
                     </li>
                 </ul>
                 <div style={{ padding: '20px' }}>
-                    <button className="btn btn-outline btn-block text-sm" onClick={() => { localStorage.removeItem('sc_admin_auth'); setIsLoggedIn(false); }}>Logout</button>
+                    <button className="btn btn-outline btn-block text-sm" onClick={() => { localStorage.removeItem('sc_admin_auth'); setIsLoggedIn(false); setIsSidebarOpen(false); }}>Logout</button>
                 </div>
             </aside>
 
             <main className="admin-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <div className="admin-header" style={{ height: '70px', background: 'var(--bg-light)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px' }}>
-                    <div>Welcome, <span className="text-gold">Admin</span></div>
+                <div className="admin-header" style={{ height: '70px', background: 'var(--bg-light)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <button 
+                            className="admin-hamburger" 
+                            onClick={() => setIsSidebarOpen(true)} 
+                            style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer', padding: '5px', display: 'none' }}
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                        </button>
+                        <div>Welcome, <span className="text-gold">Admin</span></div>
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                         <div className="text-muted text-sm">{clock}</div>
                         <span onClick={() => {
