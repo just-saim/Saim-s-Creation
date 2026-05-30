@@ -5,7 +5,7 @@ export default function Admin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const [activeTab, setActiveTab] = useState(() => localStorage.getItem('sc_admin_tab') || 'dashboard');
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
     const [clock, setClock] = useState('');
@@ -235,7 +235,7 @@ export default function Admin() {
                     {['dashboard', 'orders', 'products', 'payments'].map(tab => (
                         <li key={tab}>
                             <button
-                                onClick={() => { setActiveTab(tab); setIsSidebarOpen(false); }}
+                                onClick={() => { setActiveTab(tab); localStorage.setItem('sc_admin_tab', tab); setIsSidebarOpen(false); }}
                                 style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', color: activeTab === tab ? 'var(--gold)' : 'var(--text-muted)', background: activeTab === tab ? 'rgba(201,168,76,0.1)' : 'transparent', borderLeft: activeTab === tab ? '3px solid var(--gold)' : '3px solid transparent', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer', textTransform: 'capitalize' }}
                             >
                                 {tab}
