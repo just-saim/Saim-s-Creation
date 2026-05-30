@@ -27,6 +27,11 @@ export default function ProductDetails() {
     const [zoomStyle, setZoomStyle] = useState({ display: 'none' });
     const [lensStyle, setLensStyle] = useState({ display: 'none' });
 
+    // Lightbox / Modal States
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
+    const [touchStart, setTouchStart] = useState(null);
+
     useEffect(() => {
         window.scrollTo(0, 0);
         setLoading(true);
@@ -82,6 +87,7 @@ export default function ProductDetails() {
 
     const handleMouseMove = (e) => {
         if (!activeImage) return;
+        if (window.innerWidth <= 768) return; // Disable zoom on mobile
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - left;
         const y = e.clientY - top;
@@ -214,14 +220,21 @@ export default function ProductDetails() {
 
                         <div
                             className="product-detail-main-img"
-                            style={{ position: 'relative', border: '1px solid var(--border-color)', cursor: 'crosshair', width: '100%', aspectRatio: '3/4', overflow: 'hidden' }}
+                            style={{ position: 'relative', border: '1px solid var(--border-color)', cursor: window.innerWidth <= 768 ? 'pointer' : 'crosshair', width: '100%', aspectRatio: '3/4', overflow: 'hidden' }}
                             onMouseMove={handleMouseMove}
                             onMouseLeave={handleMouseLeave}
+                            onClick={() => {
+                                if (window.innerWidth <= 768) {
+                                    const currentIdx = allImages.indexOf(activeImage);
+                                    setLightboxIndex(currentIdx !== -1 ? currentIdx : 0);
+                                    setIsLightboxOpen(true);
+                                }
+                            }}
                         >
                             {product.stock === 0 && <span className="badge badge-out badge-wrapper" style={{ zIndex: 10 }}>Sold Out</span>}
                             {/* Wishlist Heart Icon - top right of image */}
                             <button
-                                onClick={() => setWishlisted(w => !w)}
+                                onClick={(e) => { e.stopPropagation(); setWishlisted(w => !w); }}
                                 style={{
                                     position: 'absolute', top: '12px', right: '12px', zIndex: 10,
                                     background: 'rgba(0,0,0,0.45)', border: 'none', borderRadius: '50%',
@@ -440,6 +453,104 @@ export default function ProductDetails() {
                     </div>
                 )}
             </main>
+
+            {isLightboxOpen && (
+                <div 
+                    className="lightbox-modal"
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.95)',
+                        zIndex: 10000,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        userSelect: 'none'
+                    }}
+                    onTouchStart={(e) => setTouchStart(e.targetTouches[0].clientX)}
+                    onTouchEnd={(e) => {
+                        if (touchStart === null) return;
+                        const touchEnd = e.changedTouches[0].clientX;
+                        const diff = touchStart - touchEnd;
+                        if (diff > 50) {
+                            // Swipe Left -> Next Image
+                            setLightboxIndex((prev) => (prev + 1) % allImages.length);
+                        } else if (diff < -50) {
+                            // Swipe Right -> Prev Image
+                            setLightboxIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+                        }
+                        setTouchStart(null);
+                    }}
+                >
+                    {/* Header: Counter & Close */}
+                    <div style={{ position: 'absolute', top: '20px', left: '20px', right: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff', zIndex: 10010 }}>
+                        <span style={{ fontSize: '1rem', fontWeight: 600 }}>{lightboxIndex + 1} / {allImages.length}</span>
+                        <button 
+                            onClick={() => setIsLightboxOpen(false)}
+                            style={{ background: 'none', border: 'none', color: '#fff', fontSize: '2.5rem', cursor: 'pointer', padding: '10px', lineHeight: 1 }}
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    {/* Left Arrow (only if > 1 image) */}
+                    {allImages.length > 1 && (
+                        <button 
+                            onClick={() => setLightboxIndex((prev) => (prev - 1 + allImages.length) % allImages.length)}
+                            style={{
+                                position: 'absolute', left: '15px', zIndex: 10010,
+                                background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%',
+                                width: '45px', height: '45px', display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', color: '#fff', fontSize: '1.5rem', cursor: 'pointer'
+                            }}
+                        >
+                            ‹
+                        </button>
+                    )}
+
+                    {/* Main Large Image */}
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 60px' }}>
+                        <img 
+                            src={allImages[lightboxIndex]} 
+                            alt={product.name} 
+                            style={{ maxHeight: '75vh', maxWidth: '100%', objectFit: 'contain', animation: 'fadeIn 0.3s ease' }} 
+                        />
+                    </div>
+
+                    {/* Right Arrow (only if > 1 image) */}
+                    {allImages.length > 1 && (
+                        <button 
+                            onClick={() => setLightboxIndex((prev) => (prev + 1) % allImages.length)}
+                            style={{
+                                position: 'absolute', right: '15px', zIndex: 10010,
+                                background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%',
+                                width: '45px', height: '45px', display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', color: '#fff', fontSize: '1.5rem', cursor: 'pointer'
+                            }}
+                        >
+                            ›
+                        </button>
+                    )}
+
+                    {/* Dots indicator */}
+                    {allImages.length > 1 && (
+                        <div style={{ position: 'absolute', bottom: '30px', display: 'flex', gap: '8px', zIndex: 10010 }}>
+                            {allImages.map((_, idx) => (
+                                <div 
+                                    key={idx}
+                                    onClick={() => setLightboxIndex(idx)}
+                                    style={{
+                                        width: '8px', height: '8px', borderRadius: '50%',
+                                        background: lightboxIndex === idx ? 'var(--gold)' : 'rgba(255,255,255,0.3)',
+                                        cursor: 'pointer', transition: 'background 0.2s'
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
