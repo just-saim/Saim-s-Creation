@@ -15,7 +15,7 @@
     { "src": "/uploads/(.*)", "dest": "/api/index.js" },
     { "src": "/Img/(.*)", "dest": "/frontend/dist/Img/$1" },
     { "src": "/assets/(.*)", "dest": "/frontend/dist/assets/$1" },
-    { "src": "/favicon.svg", "dest": "/frontend/dist/favicon.svg" },
+    { "src": "/favicon.svg", "dest": "/frontend/dist/Img/logo-transparent.png" },
     { "src": "/icons.svg", "dest": "/frontend/dist/icons.svg" },
     { "src": "/(.*\\.(js|css|png|jpg|svg|ico))", "dest": "/frontend/dist/$1" },
     { "src": "/(.*)", "dest": "/frontend/dist/index.html" }
