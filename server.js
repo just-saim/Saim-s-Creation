@@ -183,8 +183,14 @@ app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
 });
 
-// Only listen when running locally (not on Vercel)
-if (!isVercel) {
+// Global error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Express Server Error:', err);
+    res.status(500).json({ error: err.message || 'Internal Server Error', stack: err.stack });
+});
+
+// Only listen when running locally (directly via node server.js)
+if (require.main === module) {
     app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 }
 
