@@ -134,7 +134,7 @@ export default function ProductDetails() {
 
     return (
         <div style={{ minHeight: '100vh' }}>
-            <header className="navbar fade-in-down pd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, zIndex: 100, minHeight: '75px', background: 'rgba(5, 5, 5, 0.4)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+            <header className="navbar fade-in-down pd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, zIndex: 100, minHeight: '75px', background: 'rgba(5, 5, 5, 0.4)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', padding: '0 clamp(16px, 4vw, 40px)' }}>
                 {/* Left side: Empty spacer for centering */}
                 <div className="desktop-spacer" style={{ justifyContent: 'flex-start' }}></div>
 
@@ -146,16 +146,22 @@ export default function ProductDetails() {
                 </div>
                 
                 {/* Right side: Icons */}
-                <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 20px)', flexWrap: 'nowrap', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: 'clamp(12px, 2vw, 20px)', flexWrap: 'nowrap', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
                     <span onClick={() => {
                         document.body.classList.toggle('light-theme');
                         localStorage.setItem('sc_theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
                     }} style={{ cursor: 'pointer', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }} title="Toggle Theme">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                     </span>
+                    <span onClick={() => navigate('/')} style={{ cursor: 'pointer', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }} title="Search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <span onClick={() => navigate('/')} style={{ cursor: 'pointer', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }} title="Profile">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </span>
                     {/* Cart icon - opens mini cart */}
-                    <div style={{ position: 'relative', cursor: 'pointer', fontSize: '1.2rem', display: 'flex', alignItems: 'center' }} onClick={() => setCartOpen(true)}>
-                        🛒
+                    <div className="cart-icon-wrapper" onClick={() => setCartOpen(true)} style={{ cursor: 'pointer', color: 'var(--text-main)', transition: 'color 0.3s', position: 'relative', display: 'flex', alignItems: 'center' }}>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         {cart.length > 0 && <span className="cart-badge">{cart.reduce((a, c) => a + c.qty, 0)}</span>}
                     </div>
                 </div>
