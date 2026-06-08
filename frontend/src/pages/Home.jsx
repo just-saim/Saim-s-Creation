@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileDropdown from '../components/ProfileDropdown';
-import SearchModal from '../components/SearchModal';
+import ProfileDropdown from '../components/ProfileDropdown';
 
 const COLOR_MAP = {
     'Red': '#e53935', 'Blue': '#1e88e5', 'Green': '#43a047', 'Black': '#333',
@@ -13,6 +13,7 @@ const COLOR_MAP = {
 
 export default function Home() {
     const navigate = useNavigate();
+    const location = require('react-router-dom').useLocation();
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('sc_cart')) || []);
     const [searchTerm, setSearchTerm] = useState('');
@@ -43,6 +44,12 @@ export default function Home() {
     useEffect(() => {
         localStorage.setItem('sc_cart', JSON.stringify(cart));
     }, [cart]);
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const s = params.get('search');
+        if (s) setSearchTerm(s);
+    }, [location.search]);
 
     // Extract unique values for filters
     const allCategories = useMemo(() => [...new Set(products.map(p => p.category))], [products]);
@@ -105,17 +112,17 @@ export default function Home() {
     const activeFilterCount = selectedCategories.length + selectedColors.length + selectedOccasions.length + (priceRange[1] < maxPrice || priceRange[0] > 0 ? 1 : 0);
 
     return (
-        <div id="customer-view">
-            <header id="main-header" style={{ background: 'rgba(5, 5, 5, 0.4)', position: 'sticky', top: 0, zIndex: 100, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+        <div id="customer-view" style={{ paddingTop: '110px' }}>
+            <header id="main-header" style={{ background: 'rgba(5, 5, 5, 0.4)', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
                 <div className="container header-content" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <div className="top-row-margin" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', position: 'relative' }}>
                         <div className="desktop-spacer" style={{ justifyContent: 'flex-start' }}></div>
-                        <div className="logo" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '8px' }}>
+                        <div className="logo" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '8px', flex: '0 0 auto', zIndex: 10 }}>
                             <img src="/Img/logo-transparent.png" alt="Saim's Creation Logo" className="logo-img-1" />
                             <span className="logo-separator">×</span>
                             <img src="/Img/upscalemedia-transformed.png" alt="Partner Logo" className="logo-img-2" />
                         </div>
-                        <div className="header-actions" style={{ flex: 1, flexWrap: 'nowrap' }}>
+                        <div className="header-actions" style={{ flex: 1, flexWrap: 'nowrap', display: 'flex', justifyContent: 'flex-end', position: 'relative', zIndex: 20 }}>
                             <span onClick={() => {
                                 document.body.classList.toggle('light-theme');
                                 localStorage.setItem('sc_theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
@@ -123,10 +130,19 @@ export default function Home() {
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                             </span>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                {isSearchOpen && (
+                                    <input 
+                                        type="text" 
+                                        placeholder="Search products..." 
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        style={{ position: 'absolute', right: '30px', top: '50%', transform: 'translateY(-50%)', background: 'var(--bg-light)', color: 'var(--text-main)', border: '1px solid var(--border-color)', padding: '5px 10px', borderRadius: '4px', outline: 'none', width: '200px' }}
+                                        autoFocus
+                                    />
+                                )}
                                 <span onClick={() => setIsSearchOpen(!isSearchOpen)} style={{ cursor: 'pointer', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                                 </span>
-                                <SearchModal isOpen={isSearchOpen} setIsOpen={setIsSearchOpen} />
                             </div>
                             <div className="user-menu-container" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <span className="user-icon-wrapper" onClick={() => setIsProfileOpen(!isProfileOpen)} style={{ cursor: 'pointer', color: 'var(--text-main)', transition: 'color 0.3s', display: 'flex', alignItems: 'center' }}>
