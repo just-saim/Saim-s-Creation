@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileDropdown from '../components/ProfileDropdown';
-import ProfileDropdown from '../components/ProfileDropdown';
+
 
 const COLOR_MAP = {
     'Red': '#e53935', 'Blue': '#1e88e5', 'Green': '#43a047', 'Black': '#333',
