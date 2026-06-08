@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ProfileDropdown from '../components/ProfileDropdown';
+import SearchModal from '../components/SearchModal';
 
 const COLOR_MAP = {
     'Red': '#e53935', 'Blue': '#1e88e5', 'Green': '#43a047', 'Black': '#333',
@@ -15,48 +17,14 @@ export default function Home() {
     const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('sc_cart')) || []);
     const [searchTerm, setSearchTerm] = useState('');
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-    const [loginTab, setLoginTab] = useState('login'); // 'login' | 'register'
-    const [emailInput, setEmailInput] = useState('');
-    const [passwordInput, setPasswordInput] = useState('');
-    const [regFirstName, setRegFirstName] = useState('');
-    const [regLastName, setRegLastName] = useState('');
-    const [regEmail, setRegEmail] = useState('');
-    const [regPassword, setRegPassword] = useState('');
-    const [subscribeToOffers, setSubscribeToOffers] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 16;
 
-    // Customer profile state
-    const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('sc_logged_in') === 'true');
-    const [customerProfile, setCustomerProfile] = useState(() => {
-        try {
-            return JSON.parse(localStorage.getItem('sc_customer_profile')) || {
-                name: '',
-                email: '',
-                phone: '',
-                address: ''
-            };
-        } catch (e) {
-            return { name: '', email: '', phone: '', address: '' };
-        }
-    });
-    const [activeProfileTab, setActiveProfileTab] = useState('profile'); // 'profile' | 'address'
     const [language, setLanguage] = useState(() => localStorage.getItem('sc_language') || 'English');
-
-    const profileDropdownRef = React.useRef(null);
-
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
-                setIsProfileOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     // Filters
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -126,70 +94,6 @@ export default function Home() {
         setIsCartOpen(true);
     };
 
-    const removeFromCart = (id) => {
-        setCart(cart.filter(item => item.id !== id));
-    };
-
-    const handleEmailPasswordLogin = () => {
-        if (!emailInput || !passwordInput) {
-            alert("Please enter both email and password.");
-        } else if (emailInput === 'admin@saim.com' && passwordInput === 'admin123') {
-            window.location.href = '/admin';
-        } else {
-            alert("Login successful!");
-            setIsLoggedIn(true);
-            localStorage.setItem('sc_logged_in', 'true');
-            const updatedProfile = {
-                name: customerProfile.name || 'Customer',
-                email: emailInput,
-                phone: customerProfile.phone || '',
-                address: customerProfile.address || ''
-            };
-            setCustomerProfile(updatedProfile);
-            localStorage.setItem('sc_customer_profile', JSON.stringify(updatedProfile));
-            setIsProfileOpen(false);
-            setEmailInput('');
-            setPasswordInput('');
-        }
-    };
-
-    const handleRegister = () => {
-        if (!regFirstName || !regLastName || !regEmail || !regPassword) {
-            alert("Please fill in all fields.");
-        } else {
-            alert("Account created successfully!");
-            setIsLoggedIn(true);
-            localStorage.setItem('sc_logged_in', 'true');
-            const updatedProfile = {
-                name: `${regFirstName} ${regLastName}`,
-                email: regEmail,
-                phone: '',
-                address: ''
-            };
-            setCustomerProfile(updatedProfile);
-            localStorage.setItem('sc_customer_profile', JSON.stringify(updatedProfile));
-            setIsProfileOpen(false);
-            setRegFirstName('');
-            setRegLastName('');
-            setRegEmail('');
-            setRegPassword('');
-        }
-    };
-
-    const handleSaveProfile = () => {
-        localStorage.setItem('sc_customer_profile', JSON.stringify(customerProfile));
-        alert("Profile details saved successfully!");
-    };
-
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        localStorage.removeItem('sc_logged_in');
-        localStorage.removeItem('sc_customer_profile');
-        setCustomerProfile({ name: '', email: '', phone: '', address: '' });
-        setIsProfileOpen(false);
-        alert("Logged out successfully.");
-    };
-
     const clearAllFilters = () => {
         setSelectedCategories([]);
         setPriceRange([0, maxPrice]);
@@ -218,122 +122,17 @@ export default function Home() {
                             }} style={{ cursor: 'pointer', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }} title="Toggle Theme">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                             </span>
-                            <span style={{ cursor: 'pointer', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            </span>
-                            <div className="user-menu-container" ref={profileDropdownRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <span onClick={() => setIsSearchOpen(!isSearchOpen)} style={{ cursor: 'pointer', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                </span>
+                                <SearchModal isOpen={isSearchOpen} setIsOpen={setIsSearchOpen} />
+                            </div>
+                            <div className="user-menu-container" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <span className="user-icon-wrapper" onClick={() => setIsProfileOpen(!isProfileOpen)} style={{ cursor: 'pointer', color: 'var(--text-main)', transition: 'color 0.3s', display: 'flex', alignItems: 'center' }}>
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                 </span>
-                                {isProfileOpen && (
-                                    <div className="profile-dropdown-card">
-                                        {!isLoggedIn ? (
-                                            <>
-                                                <div style={{ display: 'flex', gap: '20px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px', paddingBottom: '0px' }}>
-                                                    <span 
-                                                        onClick={() => setLoginTab('login')} 
-                                                        style={{ cursor: 'pointer', fontWeight: loginTab === 'login' ? 700 : 400, color: loginTab === 'login' ? 'var(--gold)' : 'var(--text-muted)', borderBottom: loginTab === 'login' ? '2px solid var(--gold)' : 'none', paddingBottom: '8px', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}
-                                                    >
-                                                        LOGIN
-                                                    </span>
-                                                    <span 
-                                                        onClick={() => setLoginTab('register')} 
-                                                        style={{ cursor: 'pointer', fontWeight: loginTab === 'register' ? 700 : 400, color: loginTab === 'register' ? 'var(--gold)' : 'var(--text-muted)', borderBottom: loginTab === 'register' ? '2px solid var(--gold)' : 'none', paddingBottom: '8px', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}
-                                                    >
-                                                        CREATE ACCOUNT
-                                                    </span>
-                                                </div>
-
-                                                {loginTab === 'login' ? (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                        <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '2px', alignItems: 'stretch' }}>
-                                                            <input type="email" placeholder="Email Address*" value={emailInput} onChange={e => setEmailInput(e.target.value)} style={{ border: 'none', flex: 1, padding: '8px 12px', background: 'transparent', color: 'var(--text-main)', outline: 'none', width: '100%', fontSize: '0.9rem' }} />
-                                                        </div>
-                                                        <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '2px', alignItems: 'stretch' }}>
-                                                            <input type="password" placeholder="Password*" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} style={{ border: 'none', flex: 1, padding: '8px 12px', background: 'transparent', color: 'var(--text-main)', outline: 'none', width: '100%', fontSize: '0.9rem' }} />
-                                                        </div>
-                                                        <button className="btn btn-primary btn-block" style={{ background: 'var(--gold)', color: '#000', border: 'none', padding: '10px', fontWeight: 700, fontSize: '0.85rem' }} onClick={handleEmailPasswordLogin}>LOGIN</button>
-                                                    </div>
-                                                ) : (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                        <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '2px', alignItems: 'stretch' }}>
-                                                            <input type="text" placeholder="First Name*" value={regFirstName} onChange={e => setRegFirstName(e.target.value)} style={{ border: 'none', flex: 1, padding: '8px 12px', background: 'transparent', color: 'var(--text-main)', outline: 'none', width: '100%', fontSize: '0.9rem' }} />
-                                                        </div>
-                                                        <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '2px', alignItems: 'stretch' }}>
-                                                            <input type="text" placeholder="Last Name*" value={regLastName} onChange={e => setRegLastName(e.target.value)} style={{ border: 'none', flex: 1, padding: '8px 12px', background: 'transparent', color: 'var(--text-main)', outline: 'none', width: '100%', fontSize: '0.9rem' }} />
-                                                        </div>
-                                                        <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '2px', alignItems: 'stretch' }}>
-                                                            <input type="email" placeholder="Email Address*" value={regEmail} onChange={e => setRegEmail(e.target.value)} style={{ border: 'none', flex: 1, padding: '8px 12px', background: 'transparent', color: 'var(--text-main)', outline: 'none', width: '100%', fontSize: '0.9rem' }} />
-                                                        </div>
-                                                        <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '2px', alignItems: 'stretch' }}>
-                                                            <input type="password" placeholder="Password*" value={regPassword} onChange={e => setRegPassword(e.target.value)} style={{ border: 'none', flex: 1, padding: '8px 12px', background: 'transparent', color: 'var(--text-main)', outline: 'none', width: '100%', fontSize: '0.9rem' }} />
-                                                        </div>
-                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginTop: '4px' }}>
-                                                            <input type="checkbox" id="subscribe" checked={subscribeToOffers} onChange={e => setSubscribeToOffers(e.target.checked)} style={{ width: 'auto', marginTop: '3px', accentColor: 'var(--gold)' }} />
-                                                            <label htmlFor="subscribe" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer', lineHeight: 1.3 }}>Subscribe to stay updated with new products and offers</label>
-                                                        </div>
-                                                        <button className="btn btn-primary btn-block" style={{ background: 'var(--gold)', color: '#000', border: 'none', padding: '10px', fontWeight: 700, fontSize: '0.85rem', marginTop: '4px' }} onClick={handleRegister}>CREATE ACCOUNT</button>
-                                                    </div>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                                <div style={{ display: 'flex', gap: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '0px' }}>
-                                                    <span 
-                                                        onClick={() => setActiveProfileTab('profile')} 
-                                                        style={{ cursor: 'pointer', fontWeight: activeProfileTab === 'profile' ? 700 : 400, color: activeProfileTab === 'profile' ? 'var(--gold)' : 'var(--text-muted)', borderBottom: activeProfileTab === 'profile' ? '2px solid var(--gold)' : 'none', paddingBottom: '8px', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}
-                                                    >
-                                                        Profile Details
-                                                    </span>
-                                                    <span 
-                                                        onClick={() => setActiveProfileTab('address')} 
-                                                        style={{ cursor: 'pointer', fontWeight: activeProfileTab === 'address' ? 700 : 400, color: activeProfileTab === 'address' ? 'var(--gold)' : 'var(--text-muted)', borderBottom: activeProfileTab === 'address' ? '2px solid var(--gold)' : 'none', paddingBottom: '8px', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}
-                                                    >
-                                                        Address
-                                                    </span>
-                                                </div>
-
-                                                {activeProfileTab === 'profile' ? (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                        <div>
-                                                            <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Name</label>
-                                                            <input type="text" value={customerProfile.name} onChange={e => setCustomerProfile({...customerProfile, name: e.target.value})} style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-color)', border: '1px solid var(--border-color)', color: 'var(--text-main)', fontSize: '0.9rem', outline: 'none' }} placeholder="Enter name" />
-                                                        </div>
-                                                        <div>
-                                                            <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Email</label>
-                                                            <input type="email" value={customerProfile.email} onChange={e => setCustomerProfile({...customerProfile, email: e.target.value})} style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-color)', border: '1px solid var(--border-color)', color: 'var(--text-main)', fontSize: '0.9rem', outline: 'none' }} placeholder="Enter email" />
-                                                        </div>
-                                                        <div>
-                                                            <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Phone</label>
-                                                            <input type="text" value={customerProfile.phone} onChange={e => setCustomerProfile({...customerProfile, phone: e.target.value})} style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-color)', border: '1px solid var(--border-color)', color: 'var(--text-main)', fontSize: '0.9rem', outline: 'none' }} placeholder="Enter phone" />
-                                                        </div>
-                                                        <button className="btn btn-primary" style={{ background: 'var(--gold)', color: '#000', border: 'none', padding: '8px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', marginTop: '4px' }} onClick={handleSaveProfile}>SAVE PROFILE</button>
-                                                    </div>
-                                                ) : (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                        <div>
-                                                            <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Delivery Address</label>
-                                                            <textarea rows="3" value={customerProfile.address} onChange={e => setCustomerProfile({...customerProfile, address: e.target.value})} style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-color)', border: '1px solid var(--border-color)', color: 'var(--text-main)', fontSize: '0.9rem', outline: 'none', resize: 'vertical', fontFamily: 'var(--font-body)' }} placeholder="Enter delivery address" />
-                                                        </div>
-                                                        <button className="btn btn-primary" style={{ background: 'var(--gold)', color: '#000', border: 'none', padding: '8px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', marginTop: '4px' }} onClick={handleSaveProfile}>SAVE ADDRESS</button>
-                                                    </div>
-                                                )}
-
-                                                <button onClick={handleLogout} style={{ width: '100%', background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                    LOG OUT
-                                                </button>
-                                            </div>
-                                        )}
-                                        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginTop: '20px', display: 'flex', gap: '15px', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Language</span>
-                                            <select value={language} onChange={e => { setLanguage(e.target.value); localStorage.setItem('sc_language', e.target.value); }} style={{ background: 'var(--bg-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', padding: '4px 8px', fontSize: '0.8rem', outline: 'none', cursor: 'pointer' }}>
-                                                <option value="English">English</option>
-                                                <option value="Hindi">Hindi</option>
-                                                <option value="Urdu">Urdu</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                )}
+                                <ProfileDropdown isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} />
                             </div>
                             <span className="cart-icon-wrapper" onClick={() => setIsCartOpen(true)} style={{ cursor: 'pointer', color: 'var(--text-main)', transition: 'color 0.3s', position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>

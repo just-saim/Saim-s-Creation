@@ -1585,13 +1585,7 @@ body.light-theme #root {
     background-color: #FAFAFA;
     color: #050505;
 }
-.pd-header {
-    background-color: var(--bg-light);
-}
-body.light-theme .pd-header {
-    background-color: #FFFFFF !important;
-    border-bottom: 1px solid rgba(0,0,0,0.1) !important;
-}
+
 body.light-theme header {
     background: rgba(255, 255, 255, 0.4) !important;
     backdrop-filter: blur(20px) !important;
