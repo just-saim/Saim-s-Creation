@@ -138,7 +138,7 @@ export default function ProductDetails() {
 
     return (
         <div style={{ minHeight: '100vh', paddingTop: '110px' }}>
-            <header className="navbar fade-in-down pd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, minHeight: '75px', background: 'rgba(5, 5, 5, 0.4)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', padding: '0 clamp(16px, 4vw, 40px)' }}>
+            <header className="navbar fade-in-down pd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, minHeight: '75px', background: 'rgba(5, 5, 5, 0.25)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '0 clamp(16px, 4vw, 40px)' }}>
                 {/* Left side: Empty spacer for centering */}
                 <div className="desktop-spacer" style={{ justifyContent: 'flex-start' }}></div>
 

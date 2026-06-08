@@ -113,7 +113,7 @@ export default function Home() {
 
     return (
         <div id="customer-view" style={{ paddingTop: '110px' }}>
-            <header id="main-header" style={{ background: 'rgba(5, 5, 5, 0.4)', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+            <header id="main-header" style={{ background: 'rgba(5, 5, 5, 0.25)', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
                 <div className="container header-content" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <div className="top-row-margin" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', position: 'relative' }}>
                         <div className="desktop-spacer" style={{ justifyContent: 'flex-start' }}></div>
