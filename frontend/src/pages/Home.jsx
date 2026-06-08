@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ProfileDropdown from '../components/ProfileDropdown';
 
 
@@ -13,7 +13,7 @@ const COLOR_MAP = {
 
 export default function Home() {
     const navigate = useNavigate();
-    const location = require('react-router-dom').useLocation();
+    const location = useLocation();
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('sc_cart')) || []);
     const [searchTerm, setSearchTerm] = useState('');
